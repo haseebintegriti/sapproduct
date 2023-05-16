@@ -22,7 +22,6 @@ const STATIC_PATH =
     : `${process.cwd()}/frontend/`;
 
 const app = express();
-app.use(express.json());
 app.use(cors());
 app.use(
   bodyParser.json({
@@ -58,7 +57,7 @@ app.get(
 
 app.post(
   shopify.config.webhooks.path,
-  shopify.processWebhooks({ webhookHandlers:webhookHandlers })
+  shopify.processWebhooks({ webhookHandlers })
 );
 
 
@@ -85,7 +84,6 @@ app.use("/api/*", shopify.validateAuthenticatedSession());
 app.use(express.json());
 
 app.get("/api/products/count", async (_req, res) => {
-  console.log("ENV variables => ",process.env);
   const countData = await shopify.api.rest.Product.count({
     session: res.locals.shopify.session,
   });
@@ -111,20 +109,18 @@ app.get("/api/products/create", async (_req, res) => {
 app.get("/api/products/update", async (_req, res) => {
   
 
-  // let status = 200;
-  // let error = null;
+  let status = 200;
+  let error = null;
 
-  // try {
-  //   const updatedProduct = await product_updater(res.locals.shopify.session);
-  // } catch (e) {
-  //   console.log(`Failed to process products/update: ${e.message}`);
-  //   status = 500;
-  //   error = e.message;
-  // }
-  // res.status(status).send({ success: status === 200, error });
-
-  console.log("Request from Frontend.",_req);
-  res.status(200);
+  try {
+    const updatedProduct = await product_updater(res.locals.shopify.session);
+  } catch (e) {
+    console.log(`Failed to process products/update: ${e.message}`);
+    status = 500;
+    error = e.message;
+  }
+  
+  res.status(status).send({ success: status === 200, error });
 });
 
 // Getting list of products.
