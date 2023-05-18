@@ -26,3 +26,13 @@ export const verify = async (hmacHeader, data) => {
     return valid;
 
 };
+
+export const productUpdateWebhook = async(req,res) => {
+    let proccessed = true;
+    try{
+        console.log("Webhook file request form webhookvalidation file:  ",req, res.locals.shopify.session);
+    }catch(e){
+        proccessed = false;
+    }
+    return proccessed;
+}

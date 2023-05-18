@@ -11,7 +11,7 @@ import webhookHandlers from "./webhook-handlers.js";
 import ShopifyToken from "shopify-token/index.js";
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { verify } from "./webhookvalidation.js";
+import { verify, productUpdateWebhook } from "./webhookvalidation.js";
 
 
 const PORT = parseInt(process.env.BACKEND_PORT || process.env.PORT, 10);
@@ -21,25 +21,40 @@ const STATIC_PATH =
     ? `${process.cwd()}/frontend/dist`
     : `${process.cwd()}/frontend/`;
 
-const app = express();
-app.use(cors());
-app.use(
-  bodyParser.json({
-    verify: (req, res, buf) => {
-      req.rawBody = buf;
-    },
-  })
-);
+const bodyParserPrewiring = (server) => {
+  // save a raw (unprocessed) version of 'body' to 'rawBody'
+  function parseVerify(req, res, buf, encoding) {
+    if (buf && buf.length) {
+      req.rawBody = buf.toString(encoding || 'utf8')
+    }
+  }
 
-// shopifyToken
-//   .getAccessToken(hostname, code)
-//   .then((data) => {
-//     console.log(data);
-//     // => { access_token: 'f85632530bf277ec9ac6f649fc327f17', scope: 'read_content' }
+  server.use(bodyParser.json({
+    verify: parseVerify,
+    limit: '10mb'
+  }));
+
+  server.use(bodyParser.urlencoded({
+    extended: true,
+    verify: parseVerify,
+    limit: '10mb'
+  }));
+}
+const app = express();
+bodyParserPrewiring(app)
+// for webhooks, convert the parsed body back to raw body
+app.post("/api/webhooks", function(req, res, next) {
+  req.body = req.rawBody
+  next(); // go on to the real webhook handler
+});
+app.use(cors());
+// app.use(
+//   bodyParser.json({
+//     verify: (req, res, buf) => {
+//       req.rawBody = buf;
+//     },
 //   })
-//   .catch((err) => console.warn(err));
-// const secretKey = '<your secret key here>';
-// Set up Shopify authentication and webhook handling
+// );
 
 app.get(shopify.config.auth.path, shopify.auth.begin());
 
@@ -105,21 +120,62 @@ app.get("/api/products/create", async (_req, res) => {
   res.status(status).send({ success: status === 200, error });
 });
 
-// Updating product title and price. 
-app.get("/api/products/update", async (_req, res) => {
-  
+app.post("/api/product/pricechange", async (req, res) => {
+  let status = 200;
+  let error = null;
+  let newVariantsArray =[];
+  const vid = 45109204975904;
+  let object2;
 
+console.log("Request from front end", req.body)
+  try {
+    const xyz = await productUpdateWebhook(req.body);
+    console.log("XYZ: ",xyz);
+  // console.log("getResponse :=>", JSON.stringify(getResponse.body));
+  console.log("Price of product with ID: ",req.body.id, " is updated. Current price is: ",req.body.price, " Variants of product: ", req.body.variants );
+  req.body.variants.map((item)=>{
+    if(item.id === vid){
+      object2 = {
+        id:item.id,
+        price:req.body.price
+      }
+    }else{
+      object2 = {
+        id:item.id
+      }
+    }
+    newVariantsArray.push(object2);
+  })
+  req.body.newVariantsArray = newVariantsArray;
+  const getResponse=  await product_updater(res.locals.shopify.session, req.body);
+
+  console.log("Array of variants ID: ",newVariantsArray);
+  } catch (e) {
+    console.log(`Failed to process products/create: ${e.message}`);
+    status = 500;
+    error = e.message;
+  }
+  res.status(status).send({ success: status === 200, error });
+    // res.status(status).send({ success:"Api call success" });
+
+});
+
+// Updating product price. 
+app.get("/api/products/update", async (_req, res) => {
+
+  console.log("backend Product Update Call.");
   let status = 200;
   let error = null;
 
   try {
     const updatedProduct = await product_updater(res.locals.shopify.session);
+    console.log("Updated Product Info",updatedProduct);
   } catch (e) {
     console.log(`Failed to process products/update: ${e.message}`);
     status = 500;
     error = e.message;
   }
-  
+
   res.status(status).send({ success: status === 200, error });
 });
 

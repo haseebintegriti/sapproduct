@@ -1,35 +1,30 @@
 import shopify from "./shopify.js";
 
 export default async function product_updater(
-    session
-){
+    session,
+    data
+) {
     let functionCall = true;
     let response;
-    const productId = 8247135404320;
+    const productId = data.id;
     const body = {
-      product: {
-        title: "Apple Air MacBook M1 Pro",
-        "variants": [
-          {
-          "price":"1599.99",
-          "inventory_quantity": 3
-          }
-      ]
-      }
+        product: {
+            "variants": data.newVariantsArray
+        }
     };
     // `session` is built as part of the OAuth process
-    try{
+    try {
         const client = new shopify.api.clients.Rest({ session });
         response = await client.put({
-        path: `products/${productId}`,
-        data: body,
+            path: `products/${productId}`,
+            data: body,
         });
-        console.log("This Product is updated: ",response.body.product.variants)
-    }catch(e){
+        console.log("This Product is updated: ", response.body.product.variants)
+    } catch (e) {
         functionCall = false;
-        console.log("error in api call",e);
+        console.log("error in api call", e);
     }
-    
+
     // console.log(response);
     return response;
 }
