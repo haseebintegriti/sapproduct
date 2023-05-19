@@ -21,7 +21,10 @@ const STATIC_PATH =
     ? `${process.cwd()}/frontend/dist`
     : `${process.cwd()}/frontend/`;
 
-const bodyParserPrewiring = (server) => {
+
+const app = express();
+   
+const bodyParserPrewiring = (app) => {
   // save a raw (unprocessed) version of 'body' to 'rawBody'
   function parseVerify(req, res, buf, encoding) {
     if (buf && buf.length) {
@@ -29,52 +32,45 @@ const bodyParserPrewiring = (server) => {
     }
   }
 
-  server.use(bodyParser.json({
+  app.use(bodyParser.json({
     verify: parseVerify,
     limit: '10mb'
   }));
 
-  server.use(bodyParser.urlencoded({
+  app.use(bodyParser.urlencoded({
     extended: true,
     verify: parseVerify,
     limit: '10mb'
   }));
 }
-const app = express();
+// const app = express();
 bodyParserPrewiring(app)
-// for webhooks, convert the parsed body back to raw body
-app.post("/api/webhooks", function(req, res, next) {
-  req.body = req.rawBody
-  next(); // go on to the real webhook handler
-});
-app.use(cors());
-// app.use(
-//   bodyParser.json({
-//     verify: (req, res, buf) => {
-//       req.rawBody = buf;
-//     },
-//   })
-// );
+
+// app.use(cors());
 
 app.get(shopify.config.auth.path, shopify.auth.begin());
 
 app.get(
   shopify.config.auth.callbackPath,
   shopify.auth.callback(),
-  async (req, res) => {
-    query = req.query;
-    console.log("Query Data of app...", query)
-  },
   shopify.redirectToShopifyOrAppRoot()
 );
 
-
+app.post(shopify.config.webhooks.path, function(req, res, next) {
+  req.body = req.rawBody
+  next(); // go on to the real webhook handler
+});
 
 app.post(
   shopify.config.webhooks.path,
   shopify.processWebhooks({ webhookHandlers })
 );
 
+
+
+app.use("/api/*", shopify.validateAuthenticatedSession());
+
+app.use(express.json());
 
 app.post('/api/cart/update', async (req, _res) => {
   const hmacHeader = req.get('X-Shopify-Hmac-Sha256')
@@ -92,11 +88,6 @@ app.post('/api/cart/update', async (req, _res) => {
   }
 
 });
-
-
-app.use("/api/*", shopify.validateAuthenticatedSession());
-
-app.use(express.json());
 
 app.get("/api/products/count", async (_req, res) => {
   const countData = await shopify.api.rest.Product.count({
