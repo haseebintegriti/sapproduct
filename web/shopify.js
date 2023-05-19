@@ -1,9 +1,19 @@
-import { BillingInterval, LATEST_API_VERSION } from "@shopify/shopify-api";
+import { BillingInterval, LATEST_API_VERSION,shopifyApi } from "@shopify/shopify-api";
 import { shopifyApp } from "@shopify/shopify-app-express";
 import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
+// import '@shopify/shopify-api/adapters/node';
+import sqlite3 from "sqlite3";
+import { join } from "path";
+import { PriceChangeDB } from "./price-change-db.js";
 
-const DB_PATH = `${process.cwd()}/database.sqlite`;
+const database = new sqlite3.Database(join(process.cwd(), "database.sqlite"));
+const sessionDb = new SQLiteSessionStorage(database);
+// Initialize SQLite DB
+PriceChangeDB.db = database;
+PriceChangeDB.init();
+
+
 
 // The transactions with Shopify will always be marked as test transactions, unless NODE_ENV is production.
 // See the ensureBilling helper to learn more about billing in this template.
@@ -18,6 +28,7 @@ const billingConfig = {
 
 const shopify = shopifyApp({
   api: {
+    shopifyApi,
     apiVersion: LATEST_API_VERSION,
     restResources,
     billing: undefined, // or replace with billingConfig above to enable example billing
@@ -30,7 +41,7 @@ const shopify = shopifyApp({
     path: "/api/webhooks",
   },
   // This should be replaced with your preferred storage strategy
-  sessionStorage: new SQLiteSessionStorage(DB_PATH),
+  sessionStorage: sessionDb,
 });
 
 export default shopify;

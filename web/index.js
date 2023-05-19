@@ -12,6 +12,10 @@ import ShopifyToken from "shopify-token/index.js";
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { verify, productUpdateWebhook } from "./webhookvalidation.js";
+import {productGet} from "./product-price-changer.js";
+import {getSessionFromDB,getSession} from "./helper/price-change-helper.js";
+
+
 
 
 const PORT = parseInt(process.env.BACKEND_PORT || process.env.PORT, 10);
@@ -118,11 +122,13 @@ app.post("/api/product/pricechange", async (req, res) => {
   const vid = 45109204975904;
   let object2;
 
-console.log("Request from front end", req.body)
+console.log("Request from front end", req.body);
   try {
     const xyz = await productUpdateWebhook(req.body);
     console.log("XYZ: ",xyz);
   // console.log("getResponse :=>", JSON.stringify(getResponse.body));
+  // const getResponse=  await productGet(res.locals.shopify.session,req.body.name);
+
   console.log("Price of product with ID: ",req.body.id, " is updated. Current price is: ",req.body.price, " Variants of product: ", req.body.variants );
   req.body.variants.map((item)=>{
     if(item.id === vid){
@@ -151,6 +157,27 @@ console.log("Request from front end", req.body)
 
 });
 
+
+app.post("/api/product/pricechangebyname", async (req, res) => {
+
+  let status = 200;
+  let error = null;
+
+  console.log("Api called from backend")
+
+  try {
+    const shopName="integriti-group-inc-test.myshopify.com";
+    const response=await getSession(shopName);
+    console.log("response from getSession function :=>", response );
+    console.log("Request from front end", req.body);
+  } catch (e) {
+     console.log("Error in back end aoi cal:=>",e)
+    status = 500;
+    error = e.message;
+  }
+
+  res.status(status).send({ success: status === 200, error });
+})
 // Updating product price. 
 app.get("/api/products/update", async (_req, res) => {
 

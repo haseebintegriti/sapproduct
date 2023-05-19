@@ -10,6 +10,8 @@ import {
 } from "@shopify/polaris";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { getSessionToken, authenticatedFetch } from "@shopify/app-bridge-utils";
+import {ProductPrice} from "../components";
+
 
 export async function Index() {
    const app = useAppBridge();

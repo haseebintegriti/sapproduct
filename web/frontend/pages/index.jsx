@@ -16,7 +16,8 @@ import { useAppQuery, useAuthenticatedFetch } from "../hooks";
 
 import { trophyImage } from "../assets";
 
-import { ProductsCard, ProductCard } from "../components";
+import { ProductsCard, ProductCard,ProductPrice } from "../components";
+
 
 export default function HomePage() {
   const [isResult, setIsResult] = useState(false);
@@ -87,6 +88,7 @@ export default function HomePage() {
         </Layout.Section>
         <Layout.Section>
           <ProductsCard />
+          <ProductPrice />
         </Layout.Section>
       </Layout>
     </Page>
