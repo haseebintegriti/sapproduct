@@ -1,15 +1,11 @@
 import shopify from "./shopify.js";
 
-export default async function product_updater(
-    session,
-    data
-) {
-    let functionCall = true;
+export const product_updater= async ( session, varientsArray, productId)=>{
+    let isOk = true;
     let response;
-    const productId = data.id;
     const body = {
         product: {
-            "variants": data.newVariantsArray
+            "variants": varientsArray
         }
     };
     // `session` is built as part of the OAuth process
@@ -21,10 +17,10 @@ export default async function product_updater(
         });
         console.log("This Product is updated: ", response.body.product.variants)
     } catch (e) {
-        functionCall = false;
+        isOk = false;
         console.log("error in api call", e);
     }
 
+    return isOk;
     // console.log(response);
-    return response;
-}
+};

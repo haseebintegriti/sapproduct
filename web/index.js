@@ -5,13 +5,13 @@ import express from "express";
 import serveStatic from "serve-static";
 import shopify from "./shopify.js";
 import productCreator from "./product-creator.js";
-import product_updater from "./product-updater.js";
+import {product_updater} from "./product-updater.js";
 import product_lists from "./products-lists.js"
 import webhookHandlers from "./webhook-handlers.js";
 import ShopifyToken from "shopify-token/index.js";
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { verify, productUpdateWebhook } from "./webhookvalidation.js";
+import { verify } from "./webhookvalidation.js";
 import {productGet} from "./product-price-changer.js";
 import {getSessionFromDB,getSession} from "./helper/price-change-helper.js";
 

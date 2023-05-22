@@ -1,6 +1,6 @@
 import shopify from "../shopify.js";
 import { PriceChangeDB } from "../price-change-db.js";
-
+import {product_updater} from '../product-updater.js'
 export async function getShopUrlFromSession(req, res) {
     return `https://${res.locals.shopify.session.shop}`;
   }
@@ -59,14 +59,86 @@ export const getSessionFromDB= async (shopName)=>{
   }
 
   export const getSession=async (shopName)=>{
-    console.log("Request ibject insdie getSession function=>",shopName);
+    // console.log("Request ibject insdie getSession function=>",shopName);
     // console.log("Response Object insdie getSession function=>",res);
-    let workingFlag=true;
+    let response={
+        flag:true,
+        session:null
+    };
     try {
         const sessionObject=await PriceChangeDB.byShop(shopName);
-        console.log("Response from databse :=> ",sessionObject)
+        if (sessionObject) {
+            response.session=sessionObject;
+        }
+        // console.log("Response from databse :=> ",sessionObject);
     } catch (error) {
-        workingFlag=false;
+        response.flag=false;
+        console.log("Error in fetcging session from database:=>",error);
     }
-    return workingFlag;
-  }
+    return response;
+  };
+
+  export const updateProduct=async(shop,varient)=>{
+
+
+    let workingFlag=true;
+    let newVariantsArray = [];
+    let newPrice=1000;
+    let object2;
+    let updateVarient=varient[0].id;
+    let resObject={
+        workingFlag:true,
+        message:null
+    }
+
+if (varient.length != 0) {
+    try {
+        //   console.log("Shop from webhokk is =>",shop);
+          console.log("varient fron webhook is=>",varient);
+        const productId=varient[0].product_id;
+        const sessionResponse=await getSession(shop);
+        console.log("Response from getSeeion function :=> ",sessionResponse);
+    
+        const cartProd = await shopify.api.rest.Product.find({
+            session: sessionResponse.session,
+            id: productId,
+          });
+    
+          console.log("Product from store is  :=> ",cartProd);
+        if (cartProd && cartProd.variants !=0) {
+         
+          cartProd.variants.map((item) => {
+            if (item.id === updateVarient) {
+              object2 = {
+                id: item.id,
+                price: newPrice
+              }
+            } else {
+              object2 = {
+                id: item.id
+              }
+            }
+            newVariantsArray.push(object2);
+          });
+  
+          console.log("New Array is   :=> ",newVariantsArray);
+
+        const getResponse = await product_updater(sessionResponse.session, newVariantsArray,productId);
+
+
+
+        } else {
+            resObject.message="Varient id received from webHook but Product not found on the store."
+        }
+       
+    
+        } catch (error) {
+          console.log("Error in product update is =>",error);
+          resObject.workingFlag=false;
+          resObject.message="Error in Product update";
+        }
+}else{
+    resObject.message="Product function called without Error but carts empty mean user delete the last product also.";
+}
+return resObject;
+}
