@@ -12,7 +12,7 @@ import ShopifyToken from "shopify-token/index.js";
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { verify } from "./webhookvalidation.js";
-import {productGet} from "./product-price-changer.js";
+// import {productGet} from "./product-price-changer.js";
 import {getSessionFromDB,getSession} from "./helper/price-change-helper.js";
 
 
@@ -60,9 +60,27 @@ app.get(
   shopify.redirectToShopifyOrAppRoot()
 );
 
-app.post(shopify.config.webhooks.path, function(req, res, next) {
-  req.body = req.rawBody
+app.post(shopify.config.webhooks.path, async(req, res, next) =>{
+
+
+  req.body = req.rawBody;
+  // req.body=res;
+
   next(); // go on to the real webhook handler
+
+  // const hmacHeader = req.get('X-Shopify-Hmac-Sha256')
+  // const data = req.rawBody
+  // const verified = await verify(
+  //   hmacHeader,
+  //   data // takes the raw body extracted before bodyparsing
+  // );
+  // if (verified) {
+  //   next(); // go on to the real webhook handler
+  //   console.log("Cart updated!");
+  // } else {
+  //   console.log("Webhook is not valid!");
+  // }
+
 });
 
 app.post(
@@ -71,6 +89,22 @@ app.post(
 );
 
 
+// app.get('/refresh', (req, res) => {
+//   res.send();
+// });
+app.post("/api/webhook/cartupdate", async (req, res) => {
+  let status = 200;
+  let error = null;
+  try {
+   
+  console.log("Cart update  called");
+  } catch (e) {
+    console.log(`Failed to process products/create: ${e.message}`);
+    status = 500;
+    error = e.message;
+  }
+  res.status(status).send({ success: status === 200, error });
+});
 
 app.use("/api/*", shopify.validateAuthenticatedSession());
 
@@ -94,11 +128,16 @@ app.post('/api/cart/update', async (req, _res) => {
 });
 
 app.get("/api/products/count", async (_req, res) => {
-  const countData = await shopify.api.rest.Product.count({
-    session: res.locals.shopify.session,
-  });
-  console.log("Count data is: ", countData);
-  res.status(200).send(countData);
+  try {
+    const countData = await shopify.api.rest.Product.count({
+      session: res.locals.shopify.session,
+    });
+    res.status(200).send(countData);
+    console.log("Count data is: ", countData);
+  } catch (error) {
+    console.log("Error in  count products and error is :",error)
+  }
+  
 });
 
 app.get("/api/products/create", async (_req, res) => {
@@ -118,35 +157,11 @@ app.get("/api/products/create", async (_req, res) => {
 app.post("/api/product/pricechange", async (req, res) => {
   let status = 200;
   let error = null;
-  let newVariantsArray =[];
-  const vid = 45109204975904;
-  let object2;
 
-console.log("Request from front end", req.body);
   try {
-    const xyz = await productUpdateWebhook(req.body);
-    console.log("XYZ: ",xyz);
-  // console.log("getResponse :=>", JSON.stringify(getResponse.body));
-  // const getResponse=  await productGet(res.locals.shopify.session,req.body.name);
 
-  console.log("Price of product with ID: ",req.body.id, " is updated. Current price is: ",req.body.price, " Variants of product: ", req.body.variants );
-  req.body.variants.map((item)=>{
-    if(item.id === vid){
-      object2 = {
-        id:item.id,
-        price:req.body.price
-      }
-    }else{
-      object2 = {
-        id:item.id
-      }
-    }
-    newVariantsArray.push(object2);
-  })
-  req.body.newVariantsArray = newVariantsArray;
-  const getResponse=  await product_updater(res.locals.shopify.session, req.body);
+  // const getResponse=  await product_updater(res.locals.shopify.session, req.body);
 
-  console.log("Array of variants ID: ",newVariantsArray);
   } catch (e) {
     console.log(`Failed to process products/create: ${e.message}`);
     status = 500;
@@ -154,30 +169,8 @@ console.log("Request from front end", req.body);
   }
   res.status(status).send({ success: status === 200, error });
     // res.status(status).send({ success:"Api call success" });
-
 });
 
-
-app.post("/api/product/pricechangebyname", async (req, res) => {
-
-  let status = 200;
-  let error = null;
-
-  console.log("Api called from backend")
-
-  try {
-    const shopName="integriti-group-inc-test.myshopify.com";
-    const response=await getSession(shopName);
-    console.log("response from getSession function :=>", response );
-    console.log("Request from front end", req.body);
-  } catch (e) {
-     console.log("Error in back end aoi cal:=>",e)
-    status = 500;
-    error = e.message;
-  }
-
-  res.status(status).send({ success: status === 200, error });
-})
 // Updating product price. 
 app.get("/api/products/update", async (_req, res) => {
 
@@ -213,6 +206,12 @@ app.get("/api/products/list", async (_req, res) => {
   res.json(listProducts);
 });
 
+app.post('/carrier-service-callback', (req, res) => {
+  console.log("Console req from carrier-service-callback",req);
+  console.log("Console res from carrier-service-callback",res);
+
+});
+
 app.use(shopify.cspHeaders());
 app.use(serveStatic(STATIC_PATH, { index: false }));
 
@@ -228,4 +227,6 @@ app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
 
 });
+
+
 

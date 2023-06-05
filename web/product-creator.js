@@ -102,10 +102,14 @@ export default async function productCreator(
     }
   } catch (error) {
     if (error instanceof GraphqlQueryError) {
+
+      console.log("Error in graph Sql")
       throw new Error(
         `${error.message}\n${JSON.stringify(error.response, null, 2)}`
       );
     } else {
+      console.log("Error in graph Sql")
+
       throw error;
     }
   }

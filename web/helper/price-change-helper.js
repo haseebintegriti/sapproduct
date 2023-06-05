@@ -1,6 +1,8 @@
 import shopify from "../shopify.js";
 import { PriceChangeDB } from "../price-change-db.js";
-import {product_updater} from '../product-updater.js'
+import {product_updater} from '../product-updater.js';
+import {dilvery_change,deliverProfileGet}  from "../change-delivery-profile.js";
+
 export async function getShopUrlFromSession(req, res) {
     return `https://${res.locals.shopify.session.shop}`;
   }
@@ -81,11 +83,9 @@ export const getSessionFromDB= async (shopName)=>{
   export const updateProduct=async(shop,varient)=>{
 
 
-    let workingFlag=true;
     let newVariantsArray = [];
     let newPrice=1000;
     let object2;
-    let updateVarient=varient[0].id;
     let resObject={
         workingFlag:true,
         message:null
@@ -94,17 +94,18 @@ export const getSessionFromDB= async (shopName)=>{
 if (varient.length != 0) {
     try {
         //   console.log("Shop from webhokk is =>",shop);
-          console.log("varient fron webhook is=>",varient);
+        let updateVarient=varient[0].id;
+        // console.log("varient fron webhook is=>",varient);
         const productId=varient[0].product_id;
         const sessionResponse=await getSession(shop);
-        console.log("Response from getSeeion function :=> ",sessionResponse);
+        // console.log("Response from getSeeion function :=> ",sessionResponse);
     
         const cartProd = await shopify.api.rest.Product.find({
             session: sessionResponse.session,
             id: productId,
           });
     
-          console.log("Product from store is  :=> ",cartProd);
+          // console.log("Product from store is  :=> ",cartProd);
         if (cartProd && cartProd.variants !=0) {
          
           cartProd.variants.map((item) => {
@@ -121,11 +122,61 @@ if (varient.length != 0) {
             newVariantsArray.push(object2);
           });
   
-          console.log("New Array is   :=> ",newVariantsArray);
+          // console.log("New Array is   :=> ",newVariantsArray);
 
         const getResponse = await product_updater(sessionResponse.session, newVariantsArray,productId);
 
+        if(getResponse){
+          resObject.message="Varient price is changed.";
+          // Session is built by the OAuth process
 
+               // Session is built by the OAuth process
+
+                // const carrier_service = new shopify.api.rest.CarrierService({session: sessionResponse.session});
+                // carrier_service.name = "Shipwire"; 
+                // carrier_service.callback_url ="https://troy-native-essence-requires.trycloudflare.com/carrier-service-callback";
+                // carrier_service.service_discovery = true;
+                //     const carrierService=await carrier_service.save({
+                //         update: true,
+                //         });
+
+                // console.log("Carrier servie created",carrierService);
+
+
+                const carrierServiesList=  await shopify.api.rest.CarrierService.all({
+                       session: sessionResponse.session,
+                     });
+
+              console.log("List of Carrier servies",carrierServiesList.data);
+
+              // Session is built by the OAuth process
+
+                const zonesList=await shopify.api.rest.ShippingZone.all({
+                             session: sessionResponse.session,
+                        });
+
+              console.log("List of Shping Zones servies",zonesList.data);
+
+
+              // const shippingZoneId = 'YOUR_SHIPPING_ZONE_ID'; // Replace with the ID of the shipping zone you want to update
+
+              // const carrierService = carrierServices.find(service => service.shipping_zone_id === shippingZoneId);
+              // const carrierServiceId = carrierService.id
+
+              const deliverProfile=await dilvery_change(sessionResponse.session);
+
+              // const myJSON = JSON.stringify(deliverProfile.body)
+              // console.log("Deliver Profile Created is =>",myJSON);
+              
+              const deliverProfileList=await deliverProfileGet(sessionResponse.session);
+              // console.log("Deliver Profile List is =>",deliverProfileList);
+
+          // const currentUrl=`https://${shop}?`
+
+
+        }else{
+
+        }
 
         } else {
             resObject.message="Varient id received from webHook but Product not found on the store."
