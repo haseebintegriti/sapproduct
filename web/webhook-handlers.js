@@ -55,6 +55,26 @@ export default {
 
     },
   },
+  CHECKOUTS_CREATE: {
+
+    deliveryMethod: DeliveryMethod.Http,
+
+    callbackUrl: "/api/webhooks",
+
+    callback: async (topic, shop, body, webhookId) => {
+
+      console.log('--- Checkout create ---');
+
+      console.log('DeliveryMethod is', DeliveryMethod);
+
+      const payload = JSON.parse(body);
+
+      console.log(payload);
+
+      console.log('--- /Checkouts create ---');
+
+    },
+  },
   CARTS_UPDATE: {
 
     deliveryMethod: DeliveryMethod.Http,
