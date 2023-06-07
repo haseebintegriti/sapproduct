@@ -15,7 +15,7 @@ export const product_updater= async ( session, varientsArray, productId)=>{
             path: `products/${productId}`,
             data: body,
         });
-        console.log("This Product is updated: ", response.body.product.variants)
+        // console.log("This Product is updated: ", response.body.product.variants)
     } catch (e) {
         isOk = false;
         console.log("error in api call", e);

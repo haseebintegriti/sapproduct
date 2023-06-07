@@ -130,7 +130,7 @@ export const PriceChangeDB = {
       /* Create the QR code table if it hasn't been created */
     } else {
       const query = `
-        CREATE TABLE ${this.shopify_session} (
+        CREATE TABLE IF NOT EXISTS ${this.shopify_session} (
           id VARCHAR(255) NOT NULL PRIMARY KEY,
           shop VARCHAR(255) NOT NULL,
           state VARCHAR(255) NOT NULL,

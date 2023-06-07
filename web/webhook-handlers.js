@@ -1,7 +1,7 @@
 import { DeliveryMethod } from "@shopify/shopify-api";
 import shopify from "./shopify.js";
-import {updateProduct} from "./helper/price-change-helper.js";
-
+import {updateProduct, getCheckout} from "./helper/price-change-helper.js";
+// import app from './index.js';
 
 export default {
   /**
@@ -35,7 +35,27 @@ export default {
       // }
     },
   },
-  PRODUCTS_UPDATE: {
+  // PRODUCTS_UPDATE: {
+
+  //   deliveryMethod: DeliveryMethod.Http,
+
+  //   callbackUrl: "/api/webhooks",
+
+  //   callback: async (topic, shop, body, webhookId) => {
+
+  //     console.log('--- Product update ---');
+
+  //     console.log('DeliveryMethod is', DeliveryMethod);
+
+  //     const payload = JSON.parse(body);
+
+  //     console.log(payload);
+
+  //     console.log('--- /Product update ---');
+
+  //   },
+  // },
+  CHECKOUTS_CREATE: {
 
     deliveryMethod: DeliveryMethod.Http,
 
@@ -43,61 +63,69 @@ export default {
 
     callback: async (topic, shop, body, webhookId) => {
 
-      console.log('--- Product update ---');
+      console.log('--- Checkout create ---');
 
       console.log('DeliveryMethod is', DeliveryMethod);
 
       const payload = JSON.parse(body);
+             console.log(payload);
 
-      console.log(payload);
 
-      console.log('--- /Product update ---');
+      // console.log("Shop :",shop);
+      // console.log("Token :",payload.cart_token);
 
-    },
-  },
-  CARTS_UPDATE: {
 
-    deliveryMethod: DeliveryMethod.Http,
+      const response = await getCheckout(shop,payload.token,payload.cart_token,payload.email);
 
-    callbackUrl: "/api/webhooks",
 
-    callback: async (topic, shop, body, webhookId, res) => {
+      // Session is built by the OAuth process
 
-      const payload = JSON.parse(body);
-      // let newVariantsArray = [];
-      // const vid = 45109204975904;
+    
 
-      // console.log("Play lod is :=>",payload);
 
-      let prodID = payload.line_items.product_id;
-      let object2;
+      // console.log(payload);
 
-      console.log('--- Cart Update ---');
-      // console.log("Session is: ",res.locals.shopify.session);
-      console.log('DeliveryMethod is', DeliveryMethod);
-
-      const response = await updateProduct(shop,payload.line_items);
-      console.log("Response from productUpdate fruntion =>",response);
-      
-
-      // console.log("Request from front end", req.body)
-      // try {
-      //   // console.log("getResponse :=>", JSON.stringify(getResponse.body));
-      //   console.log("Price of product with ID: ", req.body.id, " is updated. Current price is: ", req.body.price, " Variants of product: ", req.body.variants);
-      
-      //   const getResponse = await product_updater(res.locals.shopify.session, req.body);
-
-      //   console.log("Array of variants ID: ", newVariantsArray);
-      // } catch (e) {
-      //   console.log(`Failed to process products/create: ${e.message}`);
-      //   status = 500;
-      //   error = e.message;
-      // }
-
-      console.log('--- /Cart Update ---');
+      console.log('--- /Checkouts create ---');
 
     },
   },
+  // CARTS_UPDATE: {
+
+  //   deliveryMethod: DeliveryMethod.Http,
+
+  //   callbackUrl: "/api/webhooks",
+
+  //   callback: async (topic, shop, body, webhookId) => {
+
+  //     const payload = JSON.parse(body);
+
+
+  //     console.log('--- Cart Update ---');
+  //     // console.log("Session is: ",res.locals.shopify.session);
+  //     console.log('DeliveryMethod is', DeliveryMethod);
+  //   try {
+  //       // console.log('shop name :',req);
+  //       // console.log('varients :',res);
+  //     // console.log("Shop is here :",shop);
+  //     // req.shopName=shop;
+  //     // req.varients=payload.line_items;
+ 
+  //     const response = await updateProduct(shop,payload.line_items);
+  //     console.log("Product update response.",response)
+  //     // if(response){
+  //     //   app._router.handle({ method: 'GET', url: '/refresh' }, {}, () => {});
+  //     // }
+      
+  //   } catch (error) {
+  //     console.log("Error in assigning values",error)
+  //   }
+    
+  //     // console.log("Response from productUpdate fruntion =>",response);
+      
+  //     console.log('--- /Cart Update ---');
+
+  //   },
+  // },
 
   /**
    * Store owners can request that data is deleted on behalf of a customer. When
@@ -147,3 +175,5 @@ export default {
     },
   },
 };
+
+
