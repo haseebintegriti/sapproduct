@@ -68,12 +68,14 @@ export default {
       console.log('DeliveryMethod is', DeliveryMethod);
 
       const payload = JSON.parse(body);
-
-      console.log("Shop :",shop);
-      console.log("Token :",payload.token);
+             console.log(payload);
 
 
-      const response = await getCheckout(shop,payload.token);
+      // console.log("Shop :",shop);
+      // console.log("Token :",payload.cart_token);
+
+
+      const response = await getCheckout(shop,payload.token,payload.cart_token,payload.email);
 
 
       // Session is built by the OAuth process

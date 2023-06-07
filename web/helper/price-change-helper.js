@@ -195,25 +195,24 @@ return resObject;
 }
 
 
-export const getCheckout=async(shop,token)=>{
+export const getCheckout=async(shop,token,cartToken,userEmail)=>{
   // Session is built by the OAuth process
  let okFlag=true;
 
 try {
 
+  console.log("Shop is :=>",shop)
+  console.log("Token is :=>",token)
+  console.log("Cart token is :=>",cartToken)
+  console.log("User email is :=>",userEmail)
 
   const response=await getSession(shop);
+
+  console.log("Session :=>", response.session);
 
   // get checoutot object
 
 
-
-  const getCheckout =await shopify.api.rest.Checkout.find({
-    session: response.session,
-    token: token,
-   });
-
-   console.log("Checkout response =>",getCheckout);
 
 
 // Check out create 
@@ -253,23 +252,77 @@ try {
 
 
 // update shipping start
+// const checkout = new shopify.api.rest.Checkout({session: response.session});
+// checkout.token = token;
+// checkout.email = "sajidmasood351@gmail.com";
+// checkout.shipping_line={
+//   "handle": "shopify-Free%20Shipping-0.00",
+//   "price": "100",
+//   "title": "SAP SHIPPING",
+//   "tax_lines": []
+// };
+
+// const updatedShipping= await checkout.save({
+//   update: true,
+// });
+
+// console.log("shiping update is :=>",updatedShipping)
+
+
+// Working fine and receive an checkout
+
+const getCheckout =await shopify.api.rest.Checkout.find({
+  session: response.session,
+  token: token,
+ });
+
+ console.log("Checkout response =>",getCheckout);
+
+
+
+//  Below code return and 404 error
+
 const checkout = new shopify.api.rest.Checkout({session: response.session});
 checkout.token = token;
-checkout.email = "sajidmasood351@gmail.com";
-checkout.shipping_line={
-  "handle": "shopify-Free%20Shipping-0.00",
-  "price": "100",
-  "title": "SAP SHIPPING",
-  "tax_lines": []
-};
+checkout.email = userEmail;
+checkout.phone=12345;
 
-const updatedShipping= await checkout.save({
+const updatedShippingPhone=await checkout.save({
   update: true,
 });
 
-console.log("shiping update is :=>",updatedShipping)
+console.log("shiping update is :=>",updatedShippingPhone)
+
+
+// const checkout = new shopify.api.rest.Checkout({session: response.session});
+// checkout.token = "aa27a54a2cb70db67f411a75ef9c4e5e";
+// checkout.email = userEmail;
+// checkout.shipping_address = {
+//   "first_name": "John",
+//   "last_name": "Smith",
+//   "address1": "126 York St.",
+//   "city": "Los Angeles",
+//   "province_code": "CA",
+//   "country_code": "US",
+//   "phone": "(123)456-7890",
+//   "zip": "90002"
+// };
+// const updatedShippingAddress=await checkout.save({
+//   update: true,
+// });
+
+// console.log("shiping update is :=>",updatedShippingAddress)
+
+
+
+
+
+
 
 // update shipping end
+
+
+
 
 
 // Get shipping Rates start
