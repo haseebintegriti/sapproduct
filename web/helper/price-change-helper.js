@@ -193,3 +193,115 @@ if (varient.length != 0) {
 }
 return resObject;
 }
+
+
+export const getCheckout=async(shop,token)=>{
+  // Session is built by the OAuth process
+ let okFlag=true;
+
+try {
+
+
+  const response=await getSession(shop);
+
+  // get checoutot object
+
+
+
+  const getCheckout =await shopify.api.rest.Checkout.find({
+    session: response.session,
+    token: token,
+   });
+
+   console.log("Checkout response =>",getCheckout);
+
+
+// Check out create 
+  
+//   let newArray=[];
+//   let newObject={};
+//   await getCheckout.line_items.map((item)=>{
+//     newObject={
+//       variant_id:item.variant_id,
+//       quantity:item.quantity
+//     }
+//     newArray.push(newObject);
+//    })
+
+//    console.log("Getting new array :=>",newArray);
+
+// const checkout = new shopify.api.rest.Checkout({session: response.session});
+// checkout.line_items = newArray;
+
+// const testCreateCheckOut=await checkout.save({
+//   update: true,
+// });
+
+// console.log("New checkout is created :=>",testCreateCheckOut);
+
+  //  const checkoutCreate = new shopify.api.rest.Checkout({session: response.session});
+  //  checkoutCreate.line_items =getCheckout.line_items;
+
+  //  const newCheckoutCreated=await checkoutCreate.save({
+  //     update: true,
+  //   });
+
+  //   console.log("New checkout is created :=>",newCheckoutCreated);
+
+
+// create checkout end
+
+
+// update shipping start
+const checkout = new shopify.api.rest.Checkout({session: response.session});
+checkout.token = token;
+checkout.email = "sajidmasood351@gmail.com";
+checkout.shipping_line={
+  "handle": "shopify-Free%20Shipping-0.00",
+  "price": "100",
+  "title": "SAP SHIPPING",
+  "tax_lines": []
+};
+
+const updatedShipping= await checkout.save({
+  update: true,
+});
+
+console.log("shiping update is :=>",updatedShipping)
+
+// update shipping end
+
+
+// Get shipping Rates start
+
+// const shippingRates=await shopify.api.rest.Checkout.shipping_rates({
+//   session: response.session,
+//   token: token,
+// });
+
+// console.log("Shipping Rates response =>",shippingRates);
+
+// Get shipping rates end
+
+
+// const checkout = new shopify.api.rest.Checkout({session: response.session});
+// checkout.token = token;
+// checkout.shipping_line = {
+//   "handle": "shopify-Standard-0.00"
+// };
+// const updatedShip=await checkout.save({
+//   update: true,
+// });
+
+
+  // console.log("Update shipping response =>",updatedShip);
+
+  // console.log("check out object is =>",Checkout);
+  
+} catch (error) {
+  okFlag=false;
+  console.log("Error is : ",error);
+}
+
+return okFlag;
+}
