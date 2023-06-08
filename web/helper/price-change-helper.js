@@ -143,19 +143,19 @@ if (varient.length != 0) {
                 // console.log("Carrier servie created",carrierService);
 
 
-                const carrierServiesList=  await shopify.api.rest.CarrierService.all({
-                       session: sessionResponse.session,
-                     });
+              //   const carrierServiesList=  await shopify.api.rest.CarrierService.all({
+              //          session: sessionResponse.session,
+              //        });
 
-              console.log("List of Carrier servies",carrierServiesList.data);
+              // console.log("List of Carrier servies",carrierServiesList.data);
 
               // Session is built by the OAuth process
 
-                const zonesList=await shopify.api.rest.ShippingZone.all({
-                             session: sessionResponse.session,
-                        });
+              //   const zonesList=await shopify.api.rest.ShippingZone.all({
+              //                session: sessionResponse.session,
+              //           });
 
-              console.log("List of Shping Zones servies",zonesList.data);
+              // console.log("List of Shping Zones servies",zonesList.data);
 
 
               // const shippingZoneId = 'YOUR_SHIPPING_ZONE_ID'; // Replace with the ID of the shipping zone you want to update
@@ -163,12 +163,12 @@ if (varient.length != 0) {
               // const carrierService = carrierServices.find(service => service.shipping_zone_id === shippingZoneId);
               // const carrierServiceId = carrierService.id
 
-              const deliverProfile=await dilvery_change(sessionResponse.session);
+              // const deliverProfile=await dilvery_change(sessionResponse.session);
 
               // const myJSON = JSON.stringify(deliverProfile.body)
               // console.log("Deliver Profile Created is =>",myJSON);
               
-              const deliverProfileList=await deliverProfileGet(sessionResponse.session);
+              // const deliverProfileList=await deliverProfileGet(sessionResponse.session);
               // console.log("Deliver Profile List is =>",deliverProfileList);
 
           // const currentUrl=`https://${shop}?`
@@ -273,7 +273,7 @@ try {
 
 const getCheckout =await shopify.api.rest.Checkout.find({
   session: response.session,
-  token: token,
+  token: 'exuw7apwoycchjuwtiqg8nytfhphr62a',
  });
 
  console.log("Checkout response =>",getCheckout);
@@ -283,8 +283,7 @@ const getCheckout =await shopify.api.rest.Checkout.find({
 //  Below code return and 404 error
 
 const checkout = new shopify.api.rest.Checkout({session: response.session});
-checkout.token = token;
-checkout.email = userEmail;
+checkout.token = 'exuw7apwoycchjuwtiqg8nytfhphr62a';
 checkout.phone=12345;
 
 const updatedShippingPhone=await checkout.save({
