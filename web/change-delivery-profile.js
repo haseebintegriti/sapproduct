@@ -4,64 +4,20 @@ import shopify from "./shopify.js";
 
 
 const CREATE_DELIVERY_MUTATION = `
-mutation {
-    deliveryProfileCreate(
-      profile: {
-        sellingPlanGroupsToAssociate: ["gid://shopify/SellingPlanGroup/1"]
-        name: "Deferred purchase options free shipping"
-        locationGroupsToCreate: {
-          locations: "gid://shopify/Location/1"
-          zonesToCreate: {
-            name: "All Countries"
-            countries: { restOfWorld: true }
-            methodDefinitionsToCreate: {
-              rateDefinition: { price: { amount: 0, currencyCode: CAD } }
-              name: "Test Shipping"
-            }
-          }
-        }
-      }
-    ) {
-      profile {
-        id
-        profileLocationGroups {
-          locationGroupZones(first: 1) {
-            edges {
-              node {
-                zone {
-                  id
-                  name
-                  countries {
-                    code {
-                      restOfWorld
-                    }
-                  }
-                }
-                methodDefinitions(first: 1) {
-                  edges {
-                    node {
-                      id
-                      name
-                      rateProvider {
-                        __typename
-                        ... on DeliveryRateDefinition {
-                          price {
-                            amount
-                            currencyCode
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+mutation deliveryProfileCreate {
+  deliveryProfileCreate(profile:{
+    name:"SAMPLE SHIPPING PROFILE"
+  }) {
+    profile {
+      id
+      name
+    }
+    userErrors {
+      field
+      message
     }
   }
-  
+}
 `;
 
 const GET_DELIVERY_MUTATION=`query {
@@ -85,12 +41,6 @@ export const dilvery_change= async (session) => {
   const deliverProfile=await client.query({
         data: {
           query: CREATE_DELIVERY_MUTATION,
-        //   variables: {
-        //     input: {
-        //       title: `${randomTitle()}`,
-        //       variants: [{ price: randomPrice() }],
-        //     },
-        //   },
         },
       });
 
@@ -120,7 +70,7 @@ export const deliverProfileGet= async (session)=>{
       
     const deliverProfile=await client.query({
           data: `query {
-            deliveryProfiles (first : 3) {
+            deliveryProfiles (first : 5) {
               edges {
                 node {
                   id

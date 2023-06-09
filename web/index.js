@@ -209,9 +209,10 @@ app.get("/api/products/list", async (_req, res) => {
 app.post('/carrier-service-callback', (req, res) => {
   console.log("Console req from carrier-service-callback",req);
   console.log("Console res from carrier-service-callback",res);
-
 });
 
+// https://troy-native-essence-requires.trycloudflare.com/carrier-service-callback
+ 
 app.use(shopify.cspHeaders());
 app.use(serveStatic(STATIC_PATH, { index: false }));
 

@@ -163,13 +163,13 @@ if (varient.length != 0) {
               // const carrierService = carrierServices.find(service => service.shipping_zone_id === shippingZoneId);
               // const carrierServiceId = carrierService.id
 
-              // const deliverProfile=await dilvery_change(sessionResponse.session);
+              const deliverProfile=await dilvery_change(sessionResponse.session);
 
               // const myJSON = JSON.stringify(deliverProfile.body)
-              // console.log("Deliver Profile Created is =>",myJSON);
+              console.log("Deliver Profile Created is =>",deliverProfile);
               
-              // const deliverProfileList=await deliverProfileGet(sessionResponse.session);
-              // console.log("Deliver Profile List is =>",deliverProfileList);
+              const deliverProfileList=await deliverProfileGet(sessionResponse.session);
+              console.log("Deliver Profile List is =>",deliverProfileList);
 
           // const currentUrl=`https://${shop}?`
 
