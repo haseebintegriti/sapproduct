@@ -2,7 +2,7 @@ import shopify from "../shopify.js";
 import { PriceChangeDB } from "../price-change-db.js";
 import {product_updater} from '../product-updater.js';
 import {deliverProfileVaribles} from "./profile_data.js"
-import {createDeliverProfile,deliverProfileGet,updateDeliverProfile}  from "../change-delivery-profile.js";
+import {createDeliverProfile,deliverProfileGet,updateDeliverProfile,getLocations}  from "../change-delivery-profile.js";
 
 export async function getShopUrlFromSession(req, res) {
     return `https://${res.locals.shopify.session.shop}`;
@@ -87,6 +87,7 @@ export const getSessionFromDB= async (shopName)=>{
     let newVariantsArray = [];
     let newPrice=1000;
     let object2;
+    let varintIdForDeliverProfile;
     let resObject={
         workingFlag:true,
         message:null
@@ -96,7 +97,7 @@ if (varient.length != 0) {
     try {
         //   console.log("Shop from webhokk is =>",shop);
         let updateVarient=varient[0].id;
-        // console.log("varient fron webhook is=>",varient);
+        console.log("varient fron webhook is=>",varient);
         const productId=varient[0].product_id;
         const sessionResponse=await getSession(shop);
         // console.log("Response from getSeeion function :=> ",sessionResponse);
@@ -127,8 +128,16 @@ if (varient.length != 0) {
 
         const getResponse = await product_updater(sessionResponse.session, newVariantsArray,productId);
 
-        if(getResponse){
+        if(getResponse.isOk){
+
           resObject.message="Varient price is changed.";
+
+
+          getResponse.product.map((item)=>{
+            if (item.id === updateVarient){
+               varintIdForDeliverProfile=item.admin_graphql_api_id;
+            }
+          })
           // Session is built by the OAuth process
 
                // Session is built by the OAuth process
@@ -167,22 +176,44 @@ if (varient.length != 0) {
               
               const deliverProfileList=await deliverProfileGet(sessionResponse.session);
               const deliverProfileArray=deliverProfileList.body.data.deliveryProfiles.edges;
+
+
               console.log("Deliver Profile List is =>",deliverProfileArray);
             
-              var deliveryProfileName = "NEW SHIPPING";
+              var deliveryProfileName = "NEW SAP SHIPPING";
               var includesDesiredName = includesName(deliverProfileArray, deliveryProfileName);
 
               console.log("Get Delivery Profile response :=>",includesDesiredName);
 
+              deliverProfileVaribles.profile.variantsToAssociate.push(varintIdForDeliverProfile);
+
+
               if(includesDesiredName.isOk){
                 console.log("Deliver Profile Already exisit. Now Updating.");
-
                 
-                const updateDf=await updateDeliverProfile(sessionResponse.session,includesDesiredName.deliveryProfile.id,deliverProfileVaribles.profile);
+                const deliverProfileId=includesDesiredName.deliveryProfile.id;
+
+                const myJason=JSON.stringify(includesDesiredName.deliveryProfile);
+
+                console.log("Deliver Profile Profile Locations Array")
+
+                const object = JSON.parse(myJason);
+                 console.log(JSON.stringify(object, null, 2));
+
+                console.log("Delivery Proile ID needs to update :=>",deliverProfileId);
+                // const updateDf=await updateDeliverProfile(sessionResponse.session,includesDesiredName.deliveryProfile.id,deliverProfileVaribles.profile);
                 // console.log("Deliver Profile Created is =>",updateDf);
               }else{
-                    const deliverProfile=await createDeliverProfile(sessionResponse.session,deliverProfileVaribles.profile);
-                    console.log("Deliver Profile Created is =>",deliverProfile.body.data.deliveryProfileCreate);
+
+                const locations=await getLocations(sessionResponse.session);
+                const newLocatiob=await reArrangeArrayofLocations(locations);
+
+                deliverProfileVaribles.profile.locationGroupsToCreate[0].locations=newLocatiob;
+
+                console.log("Locations are :=> ",locations);
+                  
+                const deliverProfile=await createDeliverProfile(sessionResponse.session,deliverProfileVaribles.profile);
+                console.log("Deliver Profile Created is =>",deliverProfile.body.data.deliveryProfileCreate);
               }
 
         }else{
@@ -387,3 +418,9 @@ let responseObj={
   }
   return responseObj;
 }
+
+
+function reArrangeArrayofLocations(inputArray) {
+    const outputArray = inputArray.map(item => item.id);
+    return outputArray;
+  }

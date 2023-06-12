@@ -2,24 +2,20 @@ export const deliverProfileVaribles= {
     "profile": {
       "locationGroupsToCreate": [
         {
-            "locations": [
-                ""
-              ],
-              "locationsToAdd": [
-                ""
-              ],
+            // "id":"",
+            "locations":[],
             "zonesToCreate": [
             {
               "countries": [
                 {
                   "code": "CA",
                   "includeAllProvinces": true,
-                  "provinces": [
-                    {
-                      "code": ""
-                    }
-                  ],
-                  "restOfWorld": true
+                  // "provinces": [
+                  //   {
+                  //     "code": ""
+                  //   }
+                  // ],
+                  "restOfWorld": false
                 }
               ],
             //   "id": "",
@@ -36,24 +32,8 @@ export const deliverProfileVaribles= {
                 //     }
                 //   ],
                   "description": "Sample method definition",
-                //   "id": "",
                   "name": "Standard Shipping",
-                //   "participant": {
-                //     "adaptToNewServices": true,
-                //     "carrierServiceId": "",
-                //     "fixedFee": {
-                //       "amount": "",
-                //       "currencyCode": ""
-                //     },
-                //     // "id": "",
-                //     "participantServices": [
-                //       {
-                //         "active": true,
-                //         "name": ""
-                //       }
-                //     ],
-                //     "percentageOfRateFee": 1.1
-                //   },
+              
                   "priceConditionsToCreate": [
                     {
                       "criteria": {
@@ -70,23 +50,62 @@ export const deliverProfileVaribles= {
                       "currencyCode": "USD"
                     }
                   },
-                  "weightConditionsToCreate": [
-                    {
-                      "criteria": {
-                        "unit": "KILOGRAMS",
-                        "value": 1.1
-                      },
-                      "operator": "GREATER_THAN_OR_EQUAL_TO"
-                    }
-                  ]
+                  // "weightConditionsToCreate": [
+                  //   {
+                  //     "criteria": {
+                  //       "unit": "KILOGRAMS",
+                  //       "value": 5
+                  //     },
+                  //     "operator": "GREATER_THAN_OR_EQUAL_TO"
+                  //   }
+                  // ]
                 }
               ],
-              "name": "Sample Zone"
+              "name": "Domestic"
             }
           ], 
         }
       ],
-      "name": "NEW TEST SAMPLE SHIPPING",
+      "name": "NEW SAP SHIPPING",
+      "variantsToAssociate": [],
+    }
+  }
+  
+
+  export const updateDeliverProfileVariablesObject= {
+    "id": "",
+    "leaveLegacyModeProfiles": true,
+    "profile": {
+      "locationGroupsToUpdate": [
+        { "id":"",
+          "zonesToUpdate": [
+            {   
+              "id": "",           
+              "methodDefinitionsToUpdate": [
+                {
+                  // "conditionsToUpdate": [
+                  //   {
+                  //     "criteria": 1.1,
+                  //     "criteriaUnit": "",
+                  //     "field": "",
+                  //     "id": "",
+                  //     "operator": ""
+                  //   }
+                  // ],
+                  "id": "",
+                  "rateDefinition": {
+                    "id": "",
+                    "price": {
+                      "amount": "",
+                      "currencyCode": ""
+                    }
+                  },
+                }
+              ],
+            }
+          ]
+        }
+      ]
     }
   }
   
