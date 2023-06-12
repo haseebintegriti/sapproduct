@@ -1,7 +1,8 @@
 import shopify from "../shopify.js";
 import { PriceChangeDB } from "../price-change-db.js";
 import {product_updater} from '../product-updater.js';
-import {dilvery_change,deliverProfileGet}  from "../change-delivery-profile.js";
+import {deliverProfileVaribles} from "./profile_data.js"
+import {createDeliverProfile,deliverProfileGet,updateDeliverProfile}  from "../change-delivery-profile.js";
 
 export async function getShopUrlFromSession(req, res) {
     return `https://${res.locals.shopify.session.shop}`;
@@ -163,16 +164,26 @@ if (varient.length != 0) {
               // const carrierService = carrierServices.find(service => service.shipping_zone_id === shippingZoneId);
               // const carrierServiceId = carrierService.id
 
-              const deliverProfile=await dilvery_change(sessionResponse.session);
-
-              // const myJSON = JSON.stringify(deliverProfile.body)
-              console.log("Deliver Profile Created is =>",deliverProfile);
               
               const deliverProfileList=await deliverProfileGet(sessionResponse.session);
-              console.log("Deliver Profile List is =>",deliverProfileList);
+              const deliverProfileArray=deliverProfileList.body.data.deliveryProfiles.edges;
+              console.log("Deliver Profile List is =>",deliverProfileArray);
+            
+              var deliveryProfileName = "NEW SHIPPING";
+              var includesDesiredName = includesName(deliverProfileArray, deliveryProfileName);
 
-          // const currentUrl=`https://${shop}?`
+              console.log("Get Delivery Profile response :=>",includesDesiredName);
 
+              if(includesDesiredName.isOk){
+                console.log("Deliver Profile Already exisit. Now Updating.");
+
+                
+                const updateDf=await updateDeliverProfile(sessionResponse.session,includesDesiredName.deliveryProfile.id,deliverProfileVaribles.profile);
+                // console.log("Deliver Profile Created is =>",updateDf);
+              }else{
+                    const deliverProfile=await createDeliverProfile(sessionResponse.session,deliverProfileVaribles.profile);
+                    console.log("Deliver Profile Created is =>",deliverProfile.body.data.deliveryProfileCreate);
+              }
 
         }else{
 
@@ -356,4 +367,23 @@ console.log("shiping update is :=>",updatedShippingPhone)
 }
 
 return okFlag;
+}
+
+
+
+
+function includesName(array, name) {
+
+let responseObj={
+  isOk:false,
+  deliveryProfile:null
+}  
+  for (var i = 0; i < array.length; i++) {
+    if (array[i].node.name === name) {
+      responseObj.deliveryProfile=array[i].node;
+      responseObj.isOk=true;
+      return responseObj;
+    }
+  }
+  return responseObj;
 }
