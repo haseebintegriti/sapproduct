@@ -72,32 +72,21 @@ export const deliverProfileVaribles= {
   }
   
 
-  export const updateDeliverProfileVariablesObject= {
-    "id": "",
-    "leaveLegacyModeProfiles": true,
+  export const updateDP= {
     "profile": {
       "locationGroupsToUpdate": [
-        { "id":"",
+        { 
           "zonesToUpdate": [
             {   
               "id": "",           
               "methodDefinitionsToUpdate": [
                 {
-                  // "conditionsToUpdate": [
-                  //   {
-                  //     "criteria": 1.1,
-                  //     "criteriaUnit": "",
-                  //     "field": "",
-                  //     "id": "",
-                  //     "operator": ""
-                  //   }
-                  // ],
                   "id": "",
                   "rateDefinition": {
                     "id": "",
                     "price": {
-                      "amount": "",
-                      "currencyCode": ""
+                      "amount": 10,
+                      "currencyCode": 'USD'
                     }
                   },
                 }
@@ -108,4 +97,15 @@ export const deliverProfileVaribles= {
       ]
     }
   }
+
+
+   // "conditionsToUpdate": [
+                  //   {
+                  //     "criteria": 1.1,
+                  //     "criteriaUnit": "",
+                  //     "field": "",
+                  //     "id": "",
+                  //     "operator": ""
+                  //   }
+                  // ],
   

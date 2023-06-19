@@ -37,52 +37,18 @@ mutation deliveryProfileCreate($profile: DeliveryProfileInput!) {
 // `;
 
 const UPDATE_DELIVERY_MUTATION = `
-mutation ($profileId: ID!, $locationId: ID!) {
-  deliveryProfileUpdate(
-    id: $profileId
-    profile: {
-      locationGroupsToCreate: {
-        locations: $locationId
-        zonesToCreate: [
-          {
-            name: "Canada Shipping"
-            countries: { code: "CA", includeAllProvinces: true }
-            methodDefinitionsToCreate: {
-              rateDefinition: { price: { amount: 100, currencyCode: "USD" } }
-              name: "Shipping By App"
-            }
-          }
-        ]
-      }
-    }
-  ) {
-    profile {
+mutation ($deliveryProfileId: ID!, $zoneId: ID!, $rateId: ID!, $price: Float!) {
+  deliveryProfileZoneRateUpdate(input: {
+    deliveryProfileId: $deliveryProfileId,
+    zoneId: $zoneId,
+    rateId: $rateId,
+    price: $price
+  }) {
+    deliveryProfile {
       id
-      profileLocationGroups {
-        locationGroupZones(first: 5) {
-          edges {
-            node {
-              zone {
-                id
-                name
-                countries {
-                  id
-                  name
-                  provinces {
-                    id
-                    name
-                    code
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     }
   }
 }
-
 `;
 
 const GET_DELIVERY_PROFILE_QUERY=`query {
@@ -91,25 +57,13 @@ const GET_DELIVERY_PROFILE_QUERY=`query {
       node {
         id
         name
-        profileItems (first:10)  {
-          edges {
-            node {
-              product {
-                id
-                handle
-              }
-     
-            }
-          }
-        }
         profileLocationGroups {
-          id
+
           locationGroupZones(first: 2) {
             
             edges {
-
               node {
-                id
+    
                 zone{
                   id
                   name
@@ -119,11 +73,13 @@ const GET_DELIVERY_PROFILE_QUERY=`query {
 
                   edges {
                     node {
+                      id
                       rateProvider {
                         ... on DeliveryRateDefinition {
                           id
                           price {
                             amount
+                            currencyCode
                           }
                         }
                       }
@@ -218,20 +174,22 @@ export const deliverProfileGet= async (session)=>{
 
   }
 
-  export const updateDeliverProfile= async (session,deliverProfileId,profile) => {
+  export const updateDeliverProfile= async (session,profileId,zoneId,rateId,price) => {
   
     try {
 
       const client = new shopify.api.clients.Graphql({ session });
-      console.log("Delivery Profile Id =>",deliverProfileId);
-      console.log("Delivery Profile object is =>",profile);
-      
+      // console.log("Delivery Profile Id =>",deliverProfileId);
+      // console.log("Delivery Profile object is =>",profile);
+
     const deliverProfile=await client.query({
           data: {
             "query": UPDATE_DELIVERY_MUTATION,
             "variables": {
-              "id": deliverProfileId,
-              "profile":profile,
+              "deliveryProfileId":profileId,
+              "zoneId":zoneId,
+              "rateId":rateId,
+              "price":price
             }
           },
         });

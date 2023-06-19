@@ -1,8 +1,9 @@
 import shopify from "../shopify.js";
 import { PriceChangeDB } from "../price-change-db.js";
 import {product_updater} from '../product-updater.js';
-import {deliverProfileVaribles} from "./profile_data.js"
+import {deliverProfileVaribles,updateDP} from "./profile_data.js"
 import {createDeliverProfile,deliverProfileGet,updateDeliverProfile,getLocations}  from "../change-delivery-profile.js";
+import {taxchange,updateCountryTax} from "./taxchange.js"
 
 export async function getShopUrlFromSession(req, res) {
     return `https://${res.locals.shopify.session.shop}`;
@@ -181,9 +182,10 @@ if (varient.length != 0) {
               console.log("Deliver Profile List is =>",deliverProfileArray);
             
               var deliveryProfileName = "NEW SAP SHIPPING";
-              var includesDesiredName = includesName(deliverProfileArray, deliveryProfileName);
 
-              console.log("Get Delivery Profile response :=>",includesDesiredName);
+              // var includesDesiredName = includesName(deliverProfileArray, deliveryProfileName);
+
+              // console.log("Get Delivery Profile response :=>",includesDesiredName);
 
               deliverProfileVaribles.profile.variantsToAssociate.push(varintIdForDeliverProfile);
 
@@ -192,17 +194,42 @@ if (varient.length != 0) {
                 console.log("Deliver Profile Already exisit. Now Updating.");
                 
                 const deliverProfileId=includesDesiredName.deliveryProfile.id;
+                const zoneId=includesDesiredName.deliveryProfile.profileLocationGroups[0].locationGroupZones.edges[0].node.zone.id;
+                const methodId=includesDesiredName.deliveryProfile.profileLocationGroups[0].locationGroupZones.edges[0].node.methodDefinitions.edges[0].node.id;
+                const rateId=includesDesiredName.deliveryProfile.profileLocationGroups[0].locationGroupZones.edges[0].node.methodDefinitions.edges[0].node.rateProvider.id;
 
-                const myJason=JSON.stringify(includesDesiredName.deliveryProfile);
+                const testData=includesDesiredName.deliveryProfile.profileLocationGroups;
+                console.log("profileLocationGroups is =>",testData)
 
-                console.log("Deliver Profile Profile Locations Array")
+                // const listOfCountris=await taxchange(sessionResponse.session);
+                // console.log("List of Countries :=> ",listOfCountris.listOfCountris.data);
 
-                const object = JSON.parse(myJason);
-                 console.log(JSON.stringify(object, null, 2));
+                // const requiredCountry=await getCountry(listOfCountris.listOfCountris.data,"PK");
+                // console.log("Required Counrty is => ",requiredCountry);
 
+                // const taxUpdate=await updateCountryTax(sessionResponse.session,requiredCountry.country.id,10)
+ 
                 console.log("Delivery Proile ID needs to update :=>",deliverProfileId);
-                // const updateDf=await updateDeliverProfile(sessionResponse.session,includesDesiredName.deliveryProfile.id,deliverProfileVaribles.profile);
-                // console.log("Deliver Profile Created is =>",updateDf);
+                console.log("Delivery zoneId needs to update :=>",zoneId);
+                console.log("Delivery methodId needs to update :=>",methodId);
+                console.log("Delivery rateId needs to update :=>",rateId);
+
+
+                  
+                // const myJason=JSON.stringify(includesDesiredName.deliveryProfile);
+                // console.log("Deliver Profile Profile Locations Array")
+                // const object = JSON.parse(myJason);
+                // console.log(JSON.stringify(object, null, 2));
+
+                // updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].id=zoneId;
+                // updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].methodDefinitionsToUpdate[0].id=methodId;
+                // updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].methodDefinitionsToUpdate[0].rateDefinition.id=rateId;
+
+
+                const updateDeliver=await updateDeliverProfile(sessionResponse.session,deliverProfileId,zoneId,rateId);
+                // console.log("Deliver Profile  is =>",updateDeliver);
+
+
               }else{
 
                 const locations=await getLocations(sessionResponse.session);
@@ -212,8 +239,8 @@ if (varient.length != 0) {
 
                 console.log("Locations are :=> ",locations);
                   
-                const deliverProfile=await createDeliverProfile(sessionResponse.session,deliverProfileVaribles.profile);
-                console.log("Deliver Profile Created is =>",deliverProfile.body.data.deliveryProfileCreate);
+                // const deliverProfile=await createDeliverProfile(sessionResponse.session,deliverProfileVaribles.profile);
+                // console.log("Deliver Profile Created is =>",deliverProfile.body.data.deliveryProfileCreate);
               }
 
         }else{
@@ -424,3 +451,20 @@ function reArrangeArrayofLocations(inputArray) {
     const outputArray = inputArray.map(item => item.id);
     return outputArray;
   }
+
+  function getCountry(array, code) {
+
+    let responseObj={
+      isOk:false,
+      country:null
+    }  
+      for (var i = 0; i < array.length; i++) {
+        if (array[i].code === code) {
+          responseObj.country=array[i];
+          responseObj.isOk=true;
+          return responseObj;
+        }
+      }
+      return responseObj;
+    }
+    
