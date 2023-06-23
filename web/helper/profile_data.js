@@ -76,6 +76,7 @@ export const deliverProfileVaribles= {
     "profile": {
       "locationGroupsToUpdate": [
         { 
+          "id":"",
           "zonesToUpdate": [
             {   
               "id": "",           

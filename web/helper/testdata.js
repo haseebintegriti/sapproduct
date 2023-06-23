@@ -887,4 +887,54 @@
       ]
     }
   }
+
+
+  query {
+    deliveryProfiles (first: 5) {
+      edges {
+        node {
+          id
+          name
+          profileLocationGroups {
+  
+            locationGroupZones(first: 2) {
+              
+              edges {
+                node {
+      
+                  zone{
+                    id
+                    name
+                  }
+  
+                  methodDefinitions(first: 2) {
+  
+                    edges {
+                      node {
+                        id
+                        rateProvider {
+                          ... on DeliveryRateDefinition {
+                            id
+                            price {
+                              amount
+                              currencyCode
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                 
+                  
+  
+  
+                }
+  
+              }
+            }
+          }        
+        }
+      }
+    }
+  }
   

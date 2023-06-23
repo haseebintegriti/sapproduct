@@ -75,7 +75,7 @@ export default {
       // console.log("Token :",payload.cart_token);
 
 
-      const response = await getCheckout(shop,payload.token,payload.cart_token,payload.email);
+      const response = await getCheckout(shop,payload.token,payload.cart_token,payload.email,payload);
 
 
       // Session is built by the OAuth process
@@ -83,49 +83,49 @@ export default {
     
 
 
-      // console.log(payload);
+      console.log(payload);
 
       console.log('--- /Checkouts create ---');
 
     },
   },
-  CARTS_UPDATE: {
+  // CARTS_UPDATE: {
 
-    deliveryMethod: DeliveryMethod.Http,
+  //   deliveryMethod: DeliveryMethod.Http,
 
-    callbackUrl: "/api/webhooks",
+  //   callbackUrl: "/api/webhooks",
 
-    callback: async (topic, shop, body, webhookId) => {
+  //   callback: async (topic, shop, body, webhookId) => {
 
-      const payload = JSON.parse(body);
+  //     const payload = JSON.parse(body);
 
 
-      console.log('--- Cart Update ---');
-      // console.log("Session is: ",res.locals.shopify.session);
-      console.log('DeliveryMethod is', DeliveryMethod);
-    try {
-        // console.log('shop name :',req);
-        // console.log('varients :',res);
-      // console.log("Shop is here :",shop);
-      // req.shopName=shop;
-      // req.varients=payload.line_items;
+  //     console.log('--- Cart Update ---');
+  //     // console.log("Session is: ",res.locals.shopify.session);
+  //     console.log('DeliveryMethod is', DeliveryMethod);
+  //   try {
+  //       // console.log('shop name :',req);
+  //       // console.log('varients :',res);
+  //     // console.log("Shop is here :",shop);
+  //     // req.shopName=shop;
+  //     // req.varients=payload.line_items;
  
-      const response = await updateProduct(shop,payload.line_items);
-      console.log("Product update response.",response)
-      // if(response){
-      //   app._router.handle({ method: 'GET', url: '/refresh' }, {}, () => {});
-      // }
+  //     const response = await updateProduct(shop,payload.line_items);
+  //     console.log("Product update response.",response)
+  //     // if(response){
+  //     //   app._router.handle({ method: 'GET', url: '/refresh' }, {}, () => {});
+  //     // }
       
-    } catch (error) {
-      console.log("Error in assigning values",error)
-    }
+  //   } catch (error) {
+  //     console.log("Error in assigning values",error)
+  //   }
     
-      // console.log("Response from productUpdate fruntion =>",response);
+  //     // console.log("Response from productUpdate fruntion =>",response);
       
-      console.log('--- /Cart Update ---');
+  //     console.log('--- /Cart Update ---');
 
-    },
-  },
+  //   },
+  // },
 
   /**
    * Store owners can request that data is deleted on behalf of a customer. When

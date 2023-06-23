@@ -37,18 +37,19 @@ mutation deliveryProfileCreate($profile: DeliveryProfileInput!) {
 // `;
 
 const UPDATE_DELIVERY_MUTATION = `
-mutation ($deliveryProfileId: ID!, $zoneId: ID!, $rateId: ID!, $price: Float!) {
-  deliveryProfileZoneRateUpdate(input: {
-    deliveryProfileId: $deliveryProfileId,
-    zoneId: $zoneId,
-    rateId: $rateId,
-    price: $price
-  }) {
-    deliveryProfile {
+mutation deliveryProfileUpdate($id: ID!, $profile: DeliveryProfileInput!) {
+  deliveryProfileUpdate(id: $id, profile: $profile) {
+    profile {
       id
+      name
+    }
+    userErrors {
+      field
+      message
     }
   }
 }
+
 `;
 
 const GET_DELIVERY_PROFILE_QUERY=`query {
@@ -58,7 +59,9 @@ const GET_DELIVERY_PROFILE_QUERY=`query {
         id
         name
         profileLocationGroups {
-
+          locationGroup{
+            id
+          }
           locationGroupZones(first: 2) {
             
             edges {
@@ -174,22 +177,20 @@ export const deliverProfileGet= async (session)=>{
 
   }
 
-  export const updateDeliverProfile= async (session,profileId,zoneId,rateId,price) => {
+  export const updateDeliverProfile= async (session,id,profile) => {
   
     try {
 
       const client = new shopify.api.clients.Graphql({ session });
-      // console.log("Delivery Profile Id =>",deliverProfileId);
-      // console.log("Delivery Profile object is =>",profile);
+      console.log("Delivery Profile Id =>",id);
+
 
     const deliverProfile=await client.query({
           data: {
             "query": UPDATE_DELIVERY_MUTATION,
             "variables": {
-              "deliveryProfileId":profileId,
-              "zoneId":zoneId,
-              "rateId":rateId,
-              "price":price
+              "id":id,
+              "profile":profile
             }
           },
         });

@@ -183,9 +183,11 @@ if (varient.length != 0) {
             
               var deliveryProfileName = "NEW SAP SHIPPING";
 
-              // var includesDesiredName = includesName(deliverProfileArray, deliveryProfileName);
+              var includesDesiredName = includesName(deliverProfileArray, deliveryProfileName);
 
-              // console.log("Get Delivery Profile response :=>",includesDesiredName);
+              console.log("Get Delivery Profile response :=>",includesDesiredName);
+
+              // console.log("Location Group:=>",includesDesiredName.deliveryProfile.profileLocationGroups)
 
               deliverProfileVaribles.profile.variantsToAssociate.push(varintIdForDeliverProfile);
 
@@ -194,6 +196,7 @@ if (varient.length != 0) {
                 console.log("Deliver Profile Already exisit. Now Updating.");
                 
                 const deliverProfileId=includesDesiredName.deliveryProfile.id;
+                const locationGroupId=includesDesiredName.deliveryProfile.profileLocationGroups[0].locationGroup.id;
                 const zoneId=includesDesiredName.deliveryProfile.profileLocationGroups[0].locationGroupZones.edges[0].node.zone.id;
                 const methodId=includesDesiredName.deliveryProfile.profileLocationGroups[0].locationGroupZones.edges[0].node.methodDefinitions.edges[0].node.id;
                 const rateId=includesDesiredName.deliveryProfile.profileLocationGroups[0].locationGroupZones.edges[0].node.methodDefinitions.edges[0].node.rateProvider.id;
@@ -216,17 +219,18 @@ if (varient.length != 0) {
 
 
                   
-                // const myJason=JSON.stringify(includesDesiredName.deliveryProfile);
-                // console.log("Deliver Profile Profile Locations Array")
-                // const object = JSON.parse(myJason);
-                // console.log(JSON.stringify(object, null, 2));
+                const myJason=JSON.stringify(includesDesiredName.deliveryProfile);
+                console.log("Deliver Profile Locations Array")
+                const object = JSON.parse(myJason);
+                console.log(JSON.stringify(object, null, 2));
 
-                // updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].id=zoneId;
-                // updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].methodDefinitionsToUpdate[0].id=methodId;
-                // updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].methodDefinitionsToUpdate[0].rateDefinition.id=rateId;
+                updateDP.profile.locationGroupsToUpdate[0].id=locationGroupId;
+                updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].id=zoneId;
+                updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].methodDefinitionsToUpdate[0].id=methodId;
+                updateDP.profile.locationGroupsToUpdate[0].zonesToUpdate[0].methodDefinitionsToUpdate[0].rateDefinition.id=rateId;
 
 
-                const updateDeliver=await updateDeliverProfile(sessionResponse.session,deliverProfileId,zoneId,rateId);
+                // const updateDeliver=await updateDeliverProfile(sessionResponse.session,deliverProfileId,updateDP.profile);
                 // console.log("Deliver Profile  is =>",updateDeliver);
 
 
@@ -264,7 +268,7 @@ return resObject;
 }
 
 
-export const getCheckout=async(shop,token,cartToken,userEmail)=>{
+export const getCheckout=async(shop,token,cartToken,userEmail,checkoutObject)=>{
   // Session is built by the OAuth process
  let okFlag=true;
 
@@ -281,143 +285,26 @@ try {
 
   // get checoutot object
 
-
-
-
 // Check out create 
   
-//   let newArray=[];
-//   let newObject={};
-//   await getCheckout.line_items.map((item)=>{
-//     newObject={
-//       variant_id:item.variant_id,
-//       quantity:item.quantity
-//     }
-//     newArray.push(newObject);
-//    })
-
-//    console.log("Getting new array :=>",newArray);
-
-// const checkout = new shopify.api.rest.Checkout({session: response.session});
-// checkout.line_items = newArray;
-
-// const testCreateCheckOut=await checkout.save({
-//   update: true,
-// });
-
-// console.log("New checkout is created :=>",testCreateCheckOut);
-
-  //  const checkoutCreate = new shopify.api.rest.Checkout({session: response.session});
-  //  checkoutCreate.line_items =getCheckout.line_items;
-
-  //  const newCheckoutCreated=await checkoutCreate.save({
-  //     update: true,
-  //   });
-
-  //   console.log("New checkout is created :=>",newCheckoutCreated);
-
-
-// create checkout end
-
-
-// update shipping start
-// const checkout = new shopify.api.rest.Checkout({session: response.session});
-// checkout.token = token;
-// checkout.email = "sajidmasood351@gmail.com";
-// checkout.shipping_line={
-//   "handle": "shopify-Free%20Shipping-0.00",
-//   "price": "100",
-//   "title": "SAP SHIPPING",
-//   "tax_lines": []
-// };
-
-// const updatedShipping= await checkout.save({
-//   update: true,
-// });
-
-// console.log("shiping update is :=>",updatedShipping)
-
+  // let newArray=[];
+  // let newObject={};
+  // await checkoutObject.line_items.map((item)=>{
+  //   newObject={
+  //     variant_id:item.variant_id,
+  //     quantity:item.quantity
+  //   }
+  //   newArray.push(newObject);
+  //  })
 
 // Working fine and receive an checkout
 
 const getCheckout =await shopify.api.rest.Checkout.find({
   session: response.session,
-  token: 'exuw7apwoycchjuwtiqg8nytfhphr62a',
+  token:token ,
  });
 
  console.log("Checkout response =>",getCheckout);
-
-
-
-//  Below code return and 404 error
-
-const checkout = new shopify.api.rest.Checkout({session: response.session});
-checkout.token = 'exuw7apwoycchjuwtiqg8nytfhphr62a';
-checkout.phone=12345;
-
-const updatedShippingPhone=await checkout.save({
-  update: true,
-});
-
-console.log("shiping update is :=>",updatedShippingPhone)
-
-
-// const checkout = new shopify.api.rest.Checkout({session: response.session});
-// checkout.token = "aa27a54a2cb70db67f411a75ef9c4e5e";
-// checkout.email = userEmail;
-// checkout.shipping_address = {
-//   "first_name": "John",
-//   "last_name": "Smith",
-//   "address1": "126 York St.",
-//   "city": "Los Angeles",
-//   "province_code": "CA",
-//   "country_code": "US",
-//   "phone": "(123)456-7890",
-//   "zip": "90002"
-// };
-// const updatedShippingAddress=await checkout.save({
-//   update: true,
-// });
-
-// console.log("shiping update is :=>",updatedShippingAddress)
-
-
-
-
-
-
-
-// update shipping end
-
-
-
-
-
-// Get shipping Rates start
-
-// const shippingRates=await shopify.api.rest.Checkout.shipping_rates({
-//   session: response.session,
-//   token: token,
-// });
-
-// console.log("Shipping Rates response =>",shippingRates);
-
-// Get shipping rates end
-
-
-// const checkout = new shopify.api.rest.Checkout({session: response.session});
-// checkout.token = token;
-// checkout.shipping_line = {
-//   "handle": "shopify-Standard-0.00"
-// };
-// const updatedShip=await checkout.save({
-//   update: true,
-// });
-
-
-  // console.log("Update shipping response =>",updatedShip);
-
-  // console.log("check out object is =>",Checkout);
   
 } catch (error) {
   okFlag=false;
