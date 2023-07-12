@@ -1,0 +1,14 @@
+.wellcome_card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.wellcome_heading {
+    padding: 10px 0px;
+}
+
+.discription {
+    padding: 10px 0px;
+}

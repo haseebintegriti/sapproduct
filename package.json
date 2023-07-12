@@ -14,9 +14,14 @@
   "dependencies": {
     "@shopify/app": "3.45.4",
     "@shopify/cli": "3.45.4",
+    "bootstrap": "^5.3.0",
     "crypto-js": "^4.1.1",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.1",
     "raw-body": "^2.5.2",
-    "shopify-token": "^4.1.0"
+    "react-bootstrap": "^2.8.0",
+    "shopify-token": "^4.1.0",
+    "xmlbuilder": "^15.1.1"
   },
   "author": "MuhammadHaseeb"
 }

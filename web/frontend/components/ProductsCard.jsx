@@ -1,73 +1,39 @@
 import { useState } from "react";
-import { Card, TextContainer, Text } from "@shopify/polaris";
-import { Toast } from "@shopify/app-bridge-react";
+import { Card, Text } from "@shopify/polaris";
 import { useAppQuery, useAuthenticatedFetch } from "../hooks";
+import { Container, Row, Col } from 'react-bootstrap';
+import css from "../assets/css/wellcomecard.css";
+
+
+
 
 export function ProductsCard() {
-  const emptyToastProps = { content: null };
-  const [isLoading, setIsLoading] = useState(true);
-  const [toastProps, setToastProps] = useState(emptyToastProps);
   const fetch = useAuthenticatedFetch();
-
-  const {
-    data,
-    refetch: refetchProductCount,
-    isLoading: isLoadingCount,
-    isRefetching: isRefetchingCount,
-  } = useAppQuery({
-    url: "/api/products/count",
-    reactQueryOptions: {
-      onSuccess: () => {
-        setIsLoading(false);
-      },
-    },
-  });
-
-  const toastMarkup = toastProps.content && !isRefetchingCount && (
-    <Toast {...toastProps} onDismiss={() => setToastProps(emptyToastProps)} />
-  );
-
-  const handlePopulate = async () => {
-    setIsLoading(true);
-    const response = await fetch("/api/products/create");
-
-    if (response.ok) {
-      await refetchProductCount();
-      setToastProps({ content: "5 products created!" });
-    } else {
-      setIsLoading(false);
-      setToastProps({
-        content: "There was an error creating products",
-        error: true,
-      });
-    }
-  };
-
   return (
     <>
-      {toastMarkup}
-      <Card
-        title="Product Counter"
-        sectioned
-        primaryFooterAction={{
-          content: "Populate 5 products",
-          onAction: handlePopulate,
-          loading: isLoading,
-        }}
-      >
-        <TextContainer spacing="loose">
-          <p>
-            Sample products are created with a default title and price. You can
-            remove them at any time.
-          </p>
-          <Text as="h4" variant="headingMd">
-            TOTAL PRODUCTS
-            <Text variant="bodyMd" as="p" fontWeight="semibold">
-              {isLoadingCount ? "-" : data.count}
-            </Text>
-          </Text>
-        </TextContainer>
-      </Card>
+      <Container >
+        <Row>
+          <Col >
+            <div className="wellcome_card shadow-none p-3 bg-light rounded">
+              <div className="image_part">
+              <img src="../assets/celebration_img.png" width="200px"/>
+              </div>
+              <div className="heading_part">
+                <h3 className="wellcome_heading">
+                  Welcome to the App
+                </h3>
+              </div>
+              <div>
+                <p className="discription">
+                  It is real time product pricing update app. It will get product prices from SAP and update in shopify on real time.
+                </p>
+              </div>
+            </div>
+            </Col>  
+        </Row>
+      </Container>
     </>
   );
 }
+
+

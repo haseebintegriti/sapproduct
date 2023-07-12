@@ -89,12 +89,7 @@ const GET_DELIVERY_PROFILE_QUERY=`query {
                     }
                   }
                 }
-               
-                
-
-
               }
-
             }
           }
         }        

@@ -434,6 +434,7 @@
           ],
           "zonesToUpdate": [
             {
+              "id": "",
               "countries": [
                 {
                   "code": "",
@@ -446,9 +447,9 @@
                   "restOfWorld": true
                 }
               ],
-              "id": "",
               "methodDefinitionsToCreate": [
                 {
+                  "id": "",
                   "active": true,
                   "conditionsToUpdate": [
                     {
@@ -460,7 +461,6 @@
                     }
                   ],
                   "description": "",
-                  "id": "",
                   "name": "",
                   "participant": {
                     "adaptToNewServices": true,

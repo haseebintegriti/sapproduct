@@ -14,7 +14,6 @@ PriceChangeDB.db = database;
 PriceChangeDB.init();
 
 
-
 // The transactions with Shopify will always be marked as test transactions, unless NODE_ENV is production.
 // See the ensureBilling helper to learn more about billing in this template.
 const billingConfig = {
@@ -31,7 +30,7 @@ const shopify = shopifyApp({
     shopifyApi,
     apiVersion: LATEST_API_VERSION,
     restResources,
-    billing: undefined, // or replace with billingConfig above to enable example billing
+    billing: undefined, // or npm replace with billingConfig above to enable example billing
   },
   auth: {
     path: "/api/auth",

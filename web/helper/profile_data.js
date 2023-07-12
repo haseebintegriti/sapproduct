@@ -2,7 +2,6 @@ export const deliverProfileVaribles= {
     "profile": {
       "locationGroupsToCreate": [
         {
-            // "id":"",
             "locations":[],
             "zonesToCreate": [
             {
@@ -18,7 +17,6 @@ export const deliverProfileVaribles= {
                   "restOfWorld": false
                 }
               ],
-            //   "id": "",
               "methodDefinitionsToCreate": [
                 {
                   "active": true,
@@ -44,7 +42,6 @@ export const deliverProfileVaribles= {
                     }
                   ],
                   "rateDefinition": {
-                    // "id": "",
                     "price": {
                       "amount": "10.0",
                       "currencyCode": "USD"

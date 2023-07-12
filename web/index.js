@@ -14,6 +14,7 @@ import bodyParser from 'body-parser';
 import { verify } from "./webhookvalidation.js";
 // import {productGet} from "./product-price-changer.js";
 import {getSessionFromDB,getSession} from "./helper/price-change-helper.js";
+import 'dotenv/config'
 
 
 
@@ -106,110 +107,11 @@ app.post("/api/webhook/cartupdate", async (req, res) => {
   res.status(status).send({ success: status === 200, error });
 });
 
+
+
 app.use("/api/*", shopify.validateAuthenticatedSession());
 
 app.use(express.json());
-
-app.post('/api/cart/update', async (req, _res) => {
-  const hmacHeader = req.get('X-Shopify-Hmac-Sha256')
-
-  const data = req.rawBody
-
-  const verified = await verify(
-    hmacHeader,
-    data // takes the raw body extracted before bodyparsing
-  );
-  if (verified) {
-    console.log("Cart updated!");
-  } else {
-    console.log("Webhook is not valid!");
-  }
-
-});
-
-app.get("/api/products/count", async (_req, res) => {
-  try {
-    const countData = await shopify.api.rest.Product.count({
-      session: res.locals.shopify.session,
-    });
-    res.status(200).send(countData);
-    console.log("Count data is: ", countData);
-  } catch (error) {
-    console.log("Error in  count products and error is :",error)
-  }
-  
-});
-
-app.get("/api/products/create", async (_req, res) => {
-  let status = 200;
-  let error = null;
-
-  try {
-    await productCreator(res.locals.shopify.session);
-  } catch (e) {
-    console.log(`Failed to process products/create: ${e.message}`);
-    status = 500;
-    error = e.message;
-  }
-  res.status(status).send({ success: status === 200, error });
-});
-
-app.post("/api/product/pricechange", async (req, res) => {
-  let status = 200;
-  let error = null;
-
-  try {
-
-  // const getResponse=  await product_updater(res.locals.shopify.session, req.body);
-
-  } catch (e) {
-    console.log(`Failed to process products/create: ${e.message}`);
-    status = 500;
-    error = e.message;
-  }
-  res.status(status).send({ success: status === 200, error });
-    // res.status(status).send({ success:"Api call success" });
-});
-
-// Updating product price. 
-app.get("/api/products/update", async (_req, res) => {
-
-  console.log("backend Product Update Call.");
-  let status = 200;
-  let error = null;
-
-  try {
-    const updatedProduct = await product_updater(res.locals.shopify.session);
-    console.log("Updated Product Info",updatedProduct);
-  } catch (e) {
-    console.log(`Failed to process products/update: ${e.message}`);
-    status = 500;
-    error = e.message;
-  }
-
-  res.status(status).send({ success: status === 200, error });
-});
-
-// Getting list of products.
-app.get("/api/products/list", async (_req, res) => {
-  let status = 200;
-  let error = null;
-  let listProducts;
-  try {
-    listProducts = await product_lists(res.locals.shopify.session);
-    console.log("List of products: ", listProducts);
-  } catch (e) {
-    console.log(`Failed to process products/update: ${e.message}`);
-    status = 500;
-    error = e.message;
-  }
-  res.json(listProducts);
-});
-
-app.post('/carrier-service-callback', (req, res) => {
-  console.log("Console req from carrier-service-callback",req);
-  console.log("Console res from carrier-service-callback",res);
-});
 
 // https://troy-native-essence-requires.trycloudflare.com/carrier-service-callback
  

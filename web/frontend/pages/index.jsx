@@ -16,7 +16,7 @@ import { useAppQuery, useAuthenticatedFetch } from "../hooks";
 
 import { trophyImage } from "../assets";
 
-import { ProductsCard, ProductCard,ProductPrice } from "../components";
+import { ProductsCard} from "../components";
 
 
 export default function HomePage() {
@@ -70,10 +70,10 @@ export default function HomePage() {
   
   return (
     <Page fullWidth>
-      <TitleBar title="Product Price Updater" primaryAction={null} />
+      <TitleBar title="SAP Real Time Pricing" primaryAction={null} />
       <Layout>
         <Layout.Section>
-          <Form onSubmit={handleUpdate}>
+          {/* <Form onSubmit={handleUpdate}>
             <FormLayout>
               <TextField
                 type="number"
@@ -82,13 +82,12 @@ export default function HomePage() {
               ></TextField>
               <Button submit>Submit</Button>
             </FormLayout>
-          </Form>
-          <Button onClick={listProducts}>Get List of Products</Button>
-          {isProdData ? <ProductCard data={prodData} /> : <Text>No Data Found!</Text>}
+          </Form> */}
+          {/* <Button onClick={listProducts}>Get List of Products</Button> */}
         </Layout.Section>
         <Layout.Section>
           <ProductsCard />
-          <ProductPrice />
+          {/* <ProductPrice /> */}
         </Layout.Section>
       </Layout>
     </Page>

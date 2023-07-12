@@ -68,7 +68,7 @@ export default {
       console.log('DeliveryMethod is', DeliveryMethod);
 
       const payload = JSON.parse(body);
-             console.log(payload);
+            //  console.log(payload);
 
 
       // console.log("Shop :",shop);
@@ -80,10 +80,7 @@ export default {
 
       // Session is built by the OAuth process
 
-    
-
-
-      console.log(payload);
+      // console.log(payload);
 
       console.log('--- /Checkouts create ---');
 
